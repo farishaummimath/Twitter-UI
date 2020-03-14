@@ -1,0 +1,13 @@
+.App {
+  text-align: center;
+}
+
+body {
+  text-align: center;
+  background-image: linear-gradient(-225deg, white 0%, rgb(138, 184, 223) 48%, white 100%);
+  height: 100%;
+  margin: 0;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
