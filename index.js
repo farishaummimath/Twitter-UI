@@ -3,6 +3,8 @@ const http = require('http');
 const socketio = require('socket.io');
 const bodyParser = require('body-parser');
 const cors = require('cors')
+// const dotenv = require('dotenv')
+// dotenv.config()
 
 const port = 3068
 const app = express();

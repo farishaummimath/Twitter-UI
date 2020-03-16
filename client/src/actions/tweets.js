@@ -1,3 +1,4 @@
+import axios from 'axios'
 
 export const setTweets = (tweets) => {
     return {
@@ -5,17 +6,14 @@ export const setTweets = (tweets) => {
     }
 }
 
-export const getTweets = (term) => {
+export const startGetTweets = (searchTerm) => {
     return dispatch => {
-        fetch("http://localhost:3068/setSearchTerm",
-        {
-            method: "POST",
-            headers: {
-            'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ term })
-        })
-        dispatch(setTweets)
+        axios.post(`http://localhost:3068/getTweets`, searchTerm)
+            .then(response => {
+                const tweets = response.data.statuses
+                dispatch(setTweets(tweets))
+            })
+            .catch(err => alert(err))
     }       
     
 }

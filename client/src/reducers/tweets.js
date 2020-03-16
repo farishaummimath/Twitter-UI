@@ -2,7 +2,7 @@
 const tweetsReducer = (state = [], action) => {
     switch(action.type) {
         case 'SET_TWEETS': {
-            return [...action.payload]
+            return [...state,action.payload]
         }
         default: {
             return state

@@ -1,41 +1,45 @@
 import React from 'react';
-import {TransitionGroup} from 'react-transition-group';
+import InfiniteScroll from 'react-infinite-scroll-component'
 import socketIOClient from "socket.io-client";
 import TweetCard from './TweetCard';
 import {connect} from 'react-redux'
-import {getTweets} from '../actions/tweets'
+import { startGetTweets } from '../actions/tweets'
 
 
 class TweetList extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { items: [], searchTerm: "JavaScript" };
-
-    this.handleChange = this.handleChange.bind(this);
-    this.handleKeyPress = this.handleKeyPress.bind(this);
+    constructor(props) {
+      super(props);
+      this.state = {
+        searchTerm : "",
+        hasMore : false,
+        tweetLength : 10,
+        tweetList : []
+      }
+ 
   }
 
-  handleChange(event) {
+  handleChange= (event) => {
     this.setState({ searchTerm: event.target.value });
   }
 
-  handleKeyPress(event) {
-    if (event.key === 'Enter') {
-      let term = this.state.searchTerm;
-     this.props.dispatch(getTweets(term))
-    }
+  handleSubmit=(event) =>{
+    event.preventDefault()
+      const formData = {
+        searchTerm : this.state.searchTerm
+      }     
+      this.props.dispatch(startGetTweets(formData))
     
   }
 
 componentDidMount() {
+ 
   const socket = socketIOClient('localhost:3068');
 
   socket.on('connect', () => {
     console.log("Socket Connected");
     socket.on("tweets", data => {
-      console.info(data);
-      let newList = [data].concat(this.state.items.slice(0, 15));
-      this.setState({ items: newList });
+      let newtweetList = [data].concat(this.state.tweetList.slice(0, 10));
+      this.setState({ hasMore:true,tweetList: newtweetList });
     });
   });
   socket.on('disconnect', () => {
@@ -45,50 +49,41 @@ componentDidMount() {
   });
 }
 
+fetchData = () => {
+    this.setState(prevState => ({
+      tweetList : [...prevState.tweetList, ...this.props.tweetList.slice(prevState.tweetList.length, (prevState.tweets.length + prevState.length))]
+    }))
+}
 
   render() {
-    let items = this.state.items;
-
-    let itemsCards = <TransitionGroup
->
-      {items.map((x, i) =>
-        <TweetCard key={i} data={x} />
-      )}
-    </TransitionGroup>;
-
-    let searchControls =
-      <div>
-        <input id="email" type="text" className="validate" value={this.state.searchTerm} onKeyPress={this.handleKeyPress} onChange={this.handleChange} />
-        <label htmlFor="email">Search</label>
-      </div>
-
-    let loading = <div>
-      <p className="flow-text">Listening to Streams</p>
-      <div className="progress lime lighten-3">
-        <div className="indeterminate pink accent-1"></div>
-      </div>
-    </div>
 
     return (
-      <div className="row">
-        <div className="col s12 m4 l4">
-          <div className="input-field col s12">
-            {searchControls}
-           
-          </div>
+        <>
+        <div className="row">
+          <form onSubmit={this.handleSubmit}>
+            <input
+              type="text"
+              placeholder="Search for Tweets"
+              value={this.state.searchTerm}
+              onChange={this.handleChange} />
+              <input type="submit" value='Search'/>
+            </form>
         </div>
-        <div className="col s12 m4 l4">
-          <div>
-            {
-              items.length > 0 ? itemsCards : loading
-            }
+        <div className="row">
+        <InfiniteScroll
+              dataLength = {this.state.tweetList.length}
+              next = {this.fetchData}
+              hasMore = {this.state.hasMore}
+              loader={<h4>Fetching Tweet...</h4>}
+            >
+            {this.state.tweetList && this.state.tweetList.map((tweet, i) => <TweetCard key = {i} data = {tweet} />
+            ) }
+            </InfiniteScroll>
+        </div>
+        </>
 
-          </div>
-
-        </div>
-        <div className="col s12 m4 l4">
-        </div>
-      </div>
+        
+        
     );
   }
 }

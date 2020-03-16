@@ -1,14 +1,25 @@
 import React from 'react';
 import './App.css';
-import TweetList from './components/TweetList'
+import { BrowserRouter , Route, Switch} from 'react-router-dom'
 
+import TweetList from './components/TweetList'
 
 function App() {
   return (
-    <div className="App">        
-        <TweetList/>
-      </div>
+    <BrowserRouter>
+     <>
+    <div className="App"> 
+      <Switch>
+          <Route path = "/" component = {TweetList} exact = {true} />
+      </Switch>
+    </div>
+      
+    </>
+    </BrowserRouter>
+
+      
   );
 }
 
 export default App;
+

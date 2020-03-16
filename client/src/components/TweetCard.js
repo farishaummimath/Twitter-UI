@@ -2,10 +2,11 @@ import React from 'react';
 
 class TweetCard extends React.Component {
     render() {
-        let data = this.props.data;
-
+        let data = this.props.data;   
         return (
-            <div>
+            <>
+            { (
+                <div>
                 <div className="card-panel grey lighten-5 z-depth-3 hoverable thin">
                     <div className="row valign-wrapper">
                         <div className="col s2">
@@ -20,12 +21,16 @@ class TweetCard extends React.Component {
                     {new Date(data.created_at).toLocaleTimeString()}
                     </div>
                     <div className="row valign-wrapper right-align chip hoverable">
-                        <a href={`https://twitter.com/${data.user.screen_name}`} target="_blank">{`@${data.user.screen_name}`}</a>
+                        <a href={`https://twitter.com/${data.user.screen_name}`}>{`@${data.user.screen_name}`}</a>
                     </div>
+                    
                 </div>
 
             </div>
-        );
+            )}
+            
+            </>)
+
     }
 }
 
